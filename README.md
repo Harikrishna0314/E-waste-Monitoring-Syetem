@@ -102,7 +102,7 @@ The frontend will be available at `http://localhost:5173`
 ```bash
 cd backend
 python3 -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+source venv/bin/activate  # On Windows: venv\\Scripts\\activate
 pip install -r requirements.txt
 python app.py
 ```
@@ -352,7 +352,3 @@ This project is licensed under the MIT License - see `LICENSE` file for details.
 - [ ] Advanced reporting (PDF, Excel export)
 
 ---
-
-**Last Updated**: July 2026  
-**Version**: 1.0.0  
-**Status**: Production Ready
