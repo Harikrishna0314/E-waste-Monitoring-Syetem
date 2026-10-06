@@ -339,9 +339,6 @@ This project is licensed under the MIT License - see `LICENSE` file for details.
 - Tailwind CSS
 - All contributors and supporters
 
-## 📞 Support
-
-For support, email support@ewastemonitor.com or open an issue on GitHub.
 
 ## 🗺️ Roadmap
 
