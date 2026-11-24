@@ -13,7 +13,7 @@ interface PageProps {
   onLogout: () => void;
 }
 
-export default function PickupTracking({ user, onLogout }: PageProps) {
+export default function PickupTracking({ user: _user, onLogout }: PageProps) {
   const navigate = useNavigate();
 
   const handleLogout = () => {
