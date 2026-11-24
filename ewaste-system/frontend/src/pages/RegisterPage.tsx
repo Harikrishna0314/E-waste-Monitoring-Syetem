@@ -16,7 +16,6 @@ export default function RegisterPage({ onRegister }: RegisterPageProps) {
     password: '',
     confirmPassword: '',
     full_name: '',
-    role: 'user',
     phone: '',
     city: '',
     country: ''
@@ -45,7 +44,6 @@ export default function RegisterPage({ onRegister }: RegisterPageProps) {
         email: formData.email,
         password: formData.password,
         full_name: formData.full_name,
-        role: formData.role,
         phone: formData.phone,
         city: formData.city,
         country: formData.country
@@ -113,21 +111,6 @@ export default function RegisterPage({ onRegister }: RegisterPageProps) {
                 className="glass-input text-white placeholder-white/50 text-sm"
                 required
               />
-            </div>
-
-            {/* Role */}
-            <div>
-              <label className="block text-white/80 text-sm font-medium mb-1">Role</label>
-              <select
-                name="role"
-                value={formData.role}
-                onChange={handleChange}
-                className="glass-input text-white text-sm"
-              >
-                <option value="user">User</option>
-                <option value="collection_center">Collection Center</option>
-                <option value="developer">Developer</option>
-              </select>
             </div>
 
             {/* Password */}
