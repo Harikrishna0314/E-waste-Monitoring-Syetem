@@ -19,7 +19,7 @@ class EWasteDetectionService:
         'laptop': 'laptop', 'notebook': 'laptop',
         'mobile': 'mobile', 'mobile phone': 'mobile', 'cell phone': 'mobile', 'smartphone': 'mobile', 'phone': 'mobile',
         'battery': 'battery', 'keyboard': 'keyboard', 'mouse': 'mouse',
-        'monitor': 'monitor', 'screen': 'monitor', 'display': 'monitor',
+        'monitor': 'monitor', 'screen': 'monitor', 'display': 'monitor', 'tv': 'monitor',
         'cpu': 'cpu', 'desktop': 'cpu', 'computer': 'cpu', 'computer tower': 'cpu',
         'printer': 'printer', 'cable': 'cable', 'wire': 'cable',
         'router': 'router'
@@ -68,8 +68,8 @@ class EWasteDetectionService:
     }
     
     def __init__(self, model_path=None):
-        """Load configured custom e-waste YOLO weights, if installed."""
-        default_path = Path(__file__).resolve().parent.parent / 'ai' / 'models' / 'yolov11n.pt'
+        """Load configured YOLO weights; use official COCO weights if no custom model is configured."""
+        default_path = 'yolo11n.pt'  # Ultralytics downloads official COCO weights on first use.
         self.model_path = model_path or os.getenv('YOLO_MODEL_PATH', str(default_path))
         self.model = None
         self.model_version = 'unavailable'
