@@ -1,12 +1,10 @@
 import { useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { AlertCircle, ArrowLeft, CheckCircle2, Clock3, ImagePlus, Leaf, Loader2, LogOut, RefreshCw, ShieldAlert, Sparkles, Upload, Weight } from 'lucide-react';
+import { AlertCircle, ArrowLeft, CheckCircle2, Clock3, ImagePlus, Leaf, Loader2, RefreshCw, ShieldAlert, Sparkles, Upload, Weight } from 'lucide-react';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 interface User { id: number; email: string; full_name: string; role: string; }
-interface PageProps { user: User; onLogout: () => void; }
 interface Prediction {
   prediction_id?: number;
   detected_objects: string[];
@@ -24,8 +22,7 @@ interface Prediction {
 }
 const pretty = (value: string) => value.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 
-export default function AIDetection({ user: _user, onLogout }: PageProps) {
-  const navigate = useNavigate();
+export default function AIDetection() {
   const inputRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState('');
@@ -43,14 +40,10 @@ export default function AIDetection({ user: _user, onLogout }: PageProps) {
   };
   const detect = async () => {
     if (!file) { setError('Choose an image before starting detection.'); return; }
-    const token = localStorage.getItem('token');
-    if (!token) { setError('Your session has expired. Please sign in again.'); return; }
     setLoading(true); setError(''); setResult(null);
     const body = new FormData(); body.append('file', file);
     try {
-      const response = await axios.post<Prediction>(`${API_URL}/ai/predict`, body, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await axios.post<Prediction>(`${API_URL}/ai/predict`, body);
       setResult(response.data);
     } catch (err: any) {
       setError(err.response?.data?.error || 'Detection failed. Check that the AI backend and trained e-waste model are running.');
@@ -61,14 +54,13 @@ export default function AIDetection({ user: _user, onLogout }: PageProps) {
     setFile(null); setPreview(''); setResult(null); setError('');
     if (inputRef.current) inputRef.current.value = '';
   };
-  const logout = () => { onLogout(); navigate('/login'); };
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100">
       <header className="border-b border-white/10 bg-slate-900/80">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
           <div className="flex items-center gap-3"><div className="rounded-xl bg-emerald-400/15 p-2 text-emerald-300"><Leaf /></div><div><p className="font-bold">E-Waste Monitor</p><p className="text-xs text-slate-400">AI detection workspace</p></div></div>
-          <div className="flex gap-2"><button onClick={() => navigate(-1)} className="flex items-center gap-2 rounded-lg border border-white/10 px-3 py-2 text-sm hover:bg-white/5"><ArrowLeft size={16}/> Back</button><button onClick={logout} className="flex items-center gap-2 rounded-lg border border-white/10 px-3 py-2 text-sm hover:bg-white/5"><LogOut size={16}/> Logout</button></div>
+          <div className="flex gap-2"><button onClick={() => window.history.back()} className="flex items-center gap-2 rounded-lg border border-white/10 px-3 py-2 text-sm hover:bg-white/5"><ArrowLeft size={16}/> Back</button></div>
         </div>
       </header>
       <main className="mx-auto max-w-6xl px-4 py-8">
