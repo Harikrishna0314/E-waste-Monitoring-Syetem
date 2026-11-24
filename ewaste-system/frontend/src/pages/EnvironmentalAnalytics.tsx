@@ -13,7 +13,7 @@ interface PageProps {
   onLogout: () => void;
 }
 
-export default function EnvironmentalAnalytics({ user, onLogout }: PageProps) {
+export default function EnvironmentalAnalytics({ user: _user, onLogout }: PageProps) {
   const navigate = useNavigate();
 
   const handleLogout = () => {
