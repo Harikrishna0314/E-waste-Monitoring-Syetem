@@ -35,18 +35,21 @@ def create_app(config_name='development'):
     def register():
         """Register a new user"""
         try:
-            data = request.get_json()
-            
-            if not data or not all(k in data for k in ['email', 'password', 'full_name']):
-                return jsonify({'error': 'Missing required fields'}), 400
-            
-            if User.query.filter_by(email=data['email']).first():
-                return jsonify({'error': 'Email already exists'}), 400
-            
+            data = request.get_json(silent=True) or {}
+            email = str(data.get('email', '')).strip().lower()
+            password = data.get('password', '')
+            full_name = str(data.get('full_name', '')).strip()
+
+            if not email or '@' not in email or not full_name or not isinstance(password, str) or not password:
+                return jsonify({'error': 'Enter a valid email address, your full name, and a password.'}), 400
+
+            if User.query.filter_by(email=email).first():
+                return jsonify({'error': 'An account with this email already exists. Please sign in instead.'}), 409
+
             user = User(
-                email=data['email'],
-                password_hash=hash_password(data['password']),
-                full_name=data['full_name'],
+                email=email,
+                password_hash=hash_password(password),
+                full_name=full_name,
                 role='user',
                 phone=data.get('phone'),
                 address=data.get('address'),
