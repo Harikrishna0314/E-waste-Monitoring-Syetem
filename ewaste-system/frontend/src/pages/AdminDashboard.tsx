@@ -13,7 +13,7 @@ interface DashboardProps {
   onLogout: () => void;
 }
 
-export default function AdminDashboard({ user, onLogout }: DashboardProps) {
+export default function AdminDashboard({ user: _user, onLogout }: DashboardProps) {
   const navigate = useNavigate();
 
   const handleLogout = () => {
