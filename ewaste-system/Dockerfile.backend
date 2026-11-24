@@ -3,9 +3,15 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends gcc libgl1 libglib2.0-0 && rm -rf /var/lib/apt/lists/*
 COPY backend/requirements.txt ./requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
+# Bundle the official lightweight YOLO11 COCO model so the first deployment
+# does not require the user to upload model weights. It detects device classes
+# present in COCO (laptop, cell phone, keyboard, mouse, and TV/monitor).
+RUN python -c "from ultralytics import YOLO; YOLO('yolo11n.pt')"
+ENV YOLO_MODEL_PATH=/app/yolo11n.pt
 COPY backend/ ./
-# Model weights are supplied by the project under ai/models or mounted at runtime.
+# Optional user-trained e-waste weights can be mounted under /ai/models and
+# selected by setting YOLO_MODEL_PATH at runtime.
 COPY ai/ /ai/
-EXPOSE 5000
-HEALTHCHECK --interval=30s --timeout=10s --start-period=20s --retries=3 CMD python -c "import requests; requests.get('http://localhost:5000/api/health', timeout=5).raise_for_status()"
-CMD ["gunicorn", "--workers", "2", "--timeout", "180", "--bind", "0.0.0.0:5000", "app:app"]
+EXPOSE 10000
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 CMD python -c "import os,requests; requests.get('http://localhost:%s/api/health' % os.getenv('PORT','10000'), timeout=5).raise_for_status()"
+CMD ["sh", "-c", "exec gunicorn --workers 1 --threads 2 --timeout 180 --bind 0.0.0.0:${PORT:-10000} app:app"]
