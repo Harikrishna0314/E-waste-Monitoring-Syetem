@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { Activity, BarChart3, BookOpen, Cpu, Database, Leaf, Recycle, ShieldCheck } from 'lucide-react';
+import { Activity, BarChart3, BookOpen, Cpu, Database, Recycle, ShieldCheck } from 'lucide-react';
 
 const navigation = [
   { to: '/dashboard', label: 'Dashboard', Icon: Activity },
