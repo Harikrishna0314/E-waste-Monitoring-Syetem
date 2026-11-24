@@ -22,7 +22,7 @@ python app.py
 Frontend terminal:
 ```bash
 cd frontend
-npm ci
+npm install
 npm run dev
 ```
 
