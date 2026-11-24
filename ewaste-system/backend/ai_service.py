@@ -74,7 +74,7 @@ class EWasteDetectionService:
         self.model = None
         self.model_version = 'unavailable'
         try:
-            if not os.path.isfile(self.model_path):
+            if self.model_path != 'yolo11n.pt' and not os.path.isfile(self.model_path):
                 print(f"E-waste model weights not found: {self.model_path}")
                 return
             self.model = YOLO(self.model_path)
