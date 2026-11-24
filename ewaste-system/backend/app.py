@@ -73,28 +73,34 @@ def create_app(config_name='development'):
             if 'error' in result:
                 return jsonify(result), 400
             
-            # Store prediction in database
-            guest_user = get_guest_user()
-            prediction = AIPrediction(
-                user_id=guest_user.id,
-                image_url=temp_path,
-                detected_objects=result.get('detected_objects'),
-                bounding_boxes=result.get('bounding_boxes'),
-                confidence_scores=result.get('confidence_scores'),
-                estimated_weights=result.get('estimated_weights'),
-                estimated_values=result.get('estimated_values'),
-                hazard_levels=result.get('hazard_levels'),
-                recommendations=result.get('recommendations'),
-                model_version=result.get('model_version'),
-                accuracy=result.get('accuracy'),
-                processing_time=result.get('processing_time')
-            )
-            
-            db.session.add(prediction)
-            db.session.commit()
-            
+            # Save history when the database is available. Detection itself does
+            # not depend on database availability in this public/demo mode.
+            prediction_id = None
+            try:
+                guest_user = get_guest_user()
+                prediction = AIPrediction(
+                    user_id=guest_user.id,
+                    image_url=temp_path,
+                    detected_objects=result.get('detected_objects'),
+                    bounding_boxes=result.get('bounding_boxes'),
+                    confidence_scores=result.get('confidence_scores'),
+                    estimated_weights=result.get('estimated_weights'),
+                    estimated_values=result.get('estimated_values'),
+                    hazard_levels=result.get('hazard_levels'),
+                    recommendations=result.get('recommendations'),
+                    model_version=result.get('model_version'),
+                    accuracy=result.get('accuracy'),
+                    processing_time=result.get('processing_time')
+                )
+                db.session.add(prediction)
+                db.session.commit()
+                prediction_id = prediction.id
+            except Exception:
+                db.session.rollback()
+                app.logger.warning('Prediction completed, but history could not be saved', exc_info=True)
+
             return jsonify({
-                'prediction_id': prediction.id,
+                'prediction_id': prediction_id,
                 'detected_objects': result.get('detected_objects'),
                 'bounding_boxes': result.get('bounding_boxes'),
                 'confidence_scores': result.get('confidence_scores'),
