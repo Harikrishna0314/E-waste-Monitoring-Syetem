@@ -13,7 +13,7 @@ interface DashboardProps {
   onLogout: () => void;
 }
 
-export default function CollectionCenterDashboard({ user, onLogout }: DashboardProps) {
+export default function CollectionCenterDashboard({ user: _user, onLogout }: DashboardProps) {
   const navigate = useNavigate();
 
   const handleLogout = () => {
