@@ -120,19 +120,15 @@ code {
   border-radius: 12px;
 }
 
-.glass-card {
-  @apply glass p-6 rounded-xl transition-all duration-300 hover:shadow-lg;
-}
+.glass-card { background: var(--glass-bg); backdrop-filter: blur(10px); border: 1px solid var(--glass-border); box-shadow: var(--glass-shadow); border-radius: 12px; padding: 1.5rem; transition: all .3s ease; }
+.glass-card:hover { box-shadow: 0 12px 36px rgba(0,0,0,.18); }
 
-.glass-button {
-  @apply glass px-6 py-2 rounded-lg font-medium transition-all duration-300;
-  @apply hover:shadow-lg active:scale-95;
-}
+.glass-button { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: .5rem; padding: .5rem 1.5rem; font-weight: 500; transition: all .3s ease; }
+.glass-button:hover { box-shadow: 0 8px 20px rgba(0,0,0,.15); }
+.glass-button:active { transform: scale(.97); }
 
-.glass-input {
-  @apply glass px-4 py-2 rounded-lg w-full transition-all duration-300;
-  @apply focus:outline-none focus:ring-2 focus:ring-primary;
-}
+.glass-input { background: var(--glass-bg); backdrop-filter: blur(10px); border: 1px solid var(--glass-border); border-radius: .5rem; padding: .5rem 1rem; width: 100%; transition: all .3s ease; }
+.glass-input:focus { outline: none; box-shadow: 0 0 0 2px var(--primary); }
 
 /* Gradient Backgrounds */
 .gradient-primary {
