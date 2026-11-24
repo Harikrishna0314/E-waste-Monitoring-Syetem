@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';\nimport type { DragEvent } from 'react';
 import axios from 'axios';
 import { AlertCircle, Camera, CameraOff, CheckCircle2, Clock3, Cpu, Download, ImagePlus, Loader2, RefreshCw, ShieldAlert, Sparkles, Upload, Weight, X } from 'lucide-react';
 import AppShell from '../components/AppShell';
@@ -50,7 +50,7 @@ export default function AIDetection(){
   const blob=new Blob([JSON.stringify({generated_at:new Date().toISOString(),filename:file?.name,results:result},null,2)],{type:'application/json'});
   const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='circulai-detection-report.json';a.click();URL.revokeObjectURL(url);
  };
- const handleDrop=(event:React.DragEvent<HTMLDivElement>)=>{event.preventDefault();setDragging(false);choose(event.dataTransfer.files?.[0]);};
+ const handleDrop=(event:DragEvent<HTMLDivElement>)=>{event.preventDefault();setDragging(false);choose(event.dataTransfer.files?.[0]);};
  return <AppShell><div className="mb-6"><p className="text-[9px] font-bold uppercase tracking-[.16em] text-emerald-300">Computer vision / inference console</p><h1 className="mt-1 text-3xl font-extrabold">AI E-Waste Detection & Toxicity Assessor</h1><p className="mt-2 max-w-3xl text-sm leading-6 text-slate-400">Upload or capture an image of discarded electronics to identify supported device classes, estimate material indicators, and review safe handling guidance.</p></div>
  <div className="grid gap-4 xl:grid-cols-[1.05fr_.95fr]"><section className="rounded-xl border border-[#26334a] bg-[#151f33] p-5"><div className="flex flex-wrap items-center justify-between gap-2"><h2 className="font-bold">Image Ingestion Console</h2><span className="text-[9px] text-slate-500">JPG · PNG · WEBP / MAX 10 MB</span></div>
  <input ref={inputRef} type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={e=>choose(e.target.files?.[0])}/><canvas ref={canvasRef} className="hidden"/>
