@@ -1,4 +1,4 @@
-import { LogOut, Users, MapPin, TrendingUp, Download, Calendar } from 'lucide-react';
+import { LogOut, Users, MapPin, TrendingUp, Download } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { useState } from 'react';
@@ -42,9 +42,8 @@ const centerPerformanceData = [
 
 const COLORS = ['#10b981', '#3b82f6', '#a855f7', '#f59e0b', '#ef4444'];
 
-export default function AdminDashboardEnhanced({ user, onLogout }: DashboardProps) {
+export default function AdminDashboardEnhanced({ user: _user, onLogout }: DashboardProps) {
   const navigate = useNavigate();
-  const [dateRange, setDateRange] = useState('month');
 
   const handleLogout = () => {
     onLogout();
@@ -164,7 +163,7 @@ export default function AdminDashboardEnhanced({ user, onLogout }: DashboardProp
                 fill="#8884d8"
                 dataKey="value"
               >
-                {deviceCategoryData.map((entry, index) => (
+                {deviceCategoryData.map((_entry, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
