@@ -9,3 +9,4 @@ button{cursor:pointer}
 ::-webkit-scrollbar{width:8px}
 ::-webkit-scrollbar-track{background:#0b1326}
 ::-webkit-scrollbar-thumb{background:#303b50;border-radius:8px}
+\n@media print{body{background:#fff!important;color:#111!important}aside,header,.fixed{display:none!important}main{padding:0!important;max-width:none!important}main *{break-inside:avoid;print-color-adjust:exact;-webkit-print-color-adjust:exact}button{display:none!important}}\n
