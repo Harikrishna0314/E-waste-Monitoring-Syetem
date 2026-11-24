@@ -1,4 +1,4 @@
-import { Cpu, Code2, Database, GitBranch, Leaf, Server, ShieldCheck } from 'lucide-react';
+import { Cpu, Code2, GitBranch, Leaf, Server, ShieldCheck } from 'lucide-react';
 import AppShell from '../components/AppShell';
 export default function AboutProject(){return <AppShell><div className="mb-6"><p className="text-[9px] font-bold uppercase tracking-[.16em] text-emerald-300">System specification / capstone</p><h1 className="mt-1 text-3xl font-extrabold">Project Architecture & Overview</h1><p className="mt-2 max-w-3xl text-sm leading-6 text-slate-400">CirculAI explores AI-assisted classification and safer end-of-life handling of electronic waste.</p></div>
  <section className="rounded-xl border border-[#26334a] bg-[linear-gradient(110deg,#17223a,#18283a)] p-6"><h2 className="text-xl font-bold">The E-Waste Challenge</h2><p className="mt-3 max-w-4xl text-sm leading-6 text-slate-300">Discarded electronics contain recoverable materials as well as components that require careful handling. This project demonstrates how computer vision can help identify waste categories and present practical recycling guidance.</p></section>
