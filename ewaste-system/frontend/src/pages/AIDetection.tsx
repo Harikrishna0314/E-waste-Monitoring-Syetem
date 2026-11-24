@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from 'react';\nimport type { DragEvent } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import type { DragEvent } from 'react';
 import axios from 'axios';
 import { AlertCircle, Camera, CameraOff, CheckCircle2, Clock3, Cpu, Download, ImagePlus, Loader2, RefreshCw, ShieldAlert, Sparkles, Upload, Weight, X } from 'lucide-react';
 import AppShell from '../components/AppShell';
