@@ -77,12 +77,12 @@ class EWasteDetectionService:
         """Load YOLO on demand so auth and dashboard APIs can start quickly."""
         if self.model_load_attempted:
             return self.model is not None
+        if not os.path.isfile(self.model_path):
+            print(f"E-waste model weights not found: {self.model_path}")
+            return False
         self.model_load_attempted = True
         try:
             from ultralytics import YOLO
-            if not os.path.isfile(self.model_path):
-                print(f"E-waste model weights not found: {self.model_path}")
-                return False
             self.model = YOLO(self.model_path)
             self.model_version = Path(self.model_path).stem
             names = self.model.names
