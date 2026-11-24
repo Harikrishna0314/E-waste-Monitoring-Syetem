@@ -1,233 +1,73 @@
-# Quick Start Guide - E-Waste Monitoring System
+# CirculAI Quick Start
 
-## ⚡ 5-Minute Setup with Docker
+This is a public guest-mode application. There are no demo credentials, login screens, database setup steps, pickup bookings, or saved user histories.
 
-### Option 1: Using Docker Compose (Recommended)
+## Option 1: Docker Compose (recommended)
 
-```bash
-# 1. Clone the repository
-git clone <repository-url>
-cd ewaste-system
-
-# 2. Start all services
-docker-compose up -d
-
-# 3. Wait for services to start (30 seconds)
-sleep 30
-
-# 4. Access the application
-# Frontend: http://localhost:3000
-# Backend: http://localhost:5000/api
-# Database: localhost:3306
-```
-
-**That's it! Your application is running.** 🎉
-
-### Demo Credentials
-
-Use these credentials to log in:
-
-| Role | Email | Password |
-|------|-------|----------|
-| **User** | user@example.com | password |
-| **Admin** | admin@example.com | password |
-| **Collection Center** | center1@example.com | password |
-| **Developer** | dev@example.com | password |
-
----
-
-## 🛑 Stop Services
+1. Place your trained e-waste YOLO weights at `ai/models/yolov11n.pt` (or configure `YOLO_MODEL_PATH`).
+2. From this directory, run:
 
 ```bash
-docker-compose down
+docker compose up --build -d
 ```
 
----
+3. Open `http://localhost:3000`.
 
-## 📋 Manual Setup (Without Docker)
+Nginx serves the React app and forwards `/api` calls to Flask. The API is also available internally on port 5000.
 
-### Prerequisites
-- Node.js 18+
-- Python 3.8+
-- MySQL 8.0+
+## Option 2: Run locally
 
-### Frontend Setup
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-Access at: `http://localhost:5173`
-
-### Backend Setup (New Terminal)
+### Backend
 
 ```bash
 cd backend
-python3 -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+python -m venv .venv
+# macOS / Linux
+source .venv/bin/activate
+# Windows PowerShell: .venv\\Scripts\\Activate.ps1
 pip install -r requirements.txt
 python app.py
 ```
 
-Access at: `http://localhost:5000/api`
-
-### Database Setup (New Terminal)
+### Frontend (new terminal)
 
 ```bash
-# Create database
-mysql -u root -p < database/schema.sql
-
-# Load sample data (optional)
-mysql -u root -p ewaste_system < database/sample_data.sql
+cd frontend
+npm ci
+npm run dev
 ```
 
----
+Open `http://localhost:5173`. Vite proxies `/api` to `http://127.0.0.1:5000`. Set `VITE_DEV_API_TARGET` if the backend uses another address.
 
-## 🧪 Testing the Application
+## Try the features
 
-### 1. Test Login
-1. Open http://localhost:3000 (or 5173 for manual setup)
-2. Click "Sign In"
-3. Enter: `user@example.com` / `password`
-4. Click "Sign In"
+1. **Dashboard:** open the public dashboard and explore the system modules.
+2. **AI Detection:** upload, drag-and-drop, or capture an image. Run inference, inspect bounding boxes and confidence, then export the current result as JSON.
+3. **Analytics:** explore the sample category and trend charts. Use **Export Report (PDF)** and choose Save as PDF in the browser print dialog.
+4. **Disposal & Centers:** filter accepted device categories, enter a city, and open map searches. Verify each facility's authorization directly.
+5. **About Project:** step through the frontend-to-model processing pipeline.
+6. **API Docs:** review the endpoints and copy the cURL example.
 
-### 2. Test AI Detection
-1. Go to "AI Detection" page
-2. Upload an image of electronic waste
-3. Click "Detect"
-4. View results with bounding boxes
+## API endpoints
 
-### 3. Test Pickup Booking
-1. Go to "Book Pickup"
-2. Select an e-waste item
-3. Choose date and time
-4. Submit request
+- `GET /api/health`
+- `GET /api/ai/model-info`
+- `POST /api/ai/predict` (multipart field: `file`)
+- `GET /api/analytics/environmental`
 
-### 4. Test Admin Dashboard
-1. Log out and log in as `admin@example.com` / `password`
-2. View system statistics
-3. Check charts and analytics
+## AI model requirement
 
----
+The repository does not include trained model weights. Live inference works only after you provide compatible e-waste-trained YOLO weights. Default path: `ai/models/yolov11n.pt`. Alternatively set `YOLO_MODEL_PATH` to an absolute path on the backend host. The model must expose supported e-waste labels such as laptop, mobile, battery, keyboard, mouse, monitor, CPU, printer, cable, or router.
 
-## 📊 API Testing with Postman
+If weights are absent, `/api/ai/model-info` reports that they are unavailable and the inference endpoint returns a configuration error. No fake prediction is generated.
 
-### 1. Import Collection
-1. Open Postman
-2. Click "Import"
-3. Select `docs/Postman_Collection.json`
+## Deployment notes
 
-### 2. Set Variables
-1. Click "Variables" tab
-2. Set `base_url` = `http://localhost:5000/api`
+- For a separate frontend deployment, set build-time `VITE_API_URL` to the backend API base (for example `https://your-api.example/api`).
+- Set backend `CORS_ORIGINS` to the exact frontend origin.
+- Camera capture requires HTTPS or localhost and browser permission.
+- Upload limit: 10 MB; accepted formats: JPG, PNG, WEBP.
 
-### 3. Test Endpoints
-1. Go to "Authentication" folder
-2. Click "Login"
-3. Send request
-4. Copy token from response
-5. Paste in `{{token}}` variable
+## Privacy and limitations
 
----
-
-## 🐛 Troubleshooting
-
-### Port Already in Use
-
-```bash
-# Find process using port 3000
-lsof -i :3000
-
-# Kill process
-kill -9 <PID>
-
-# Or use different port
-npm run dev -- --port 3001
-```
-
-### Database Connection Error
-
-```bash
-# Check MySQL is running
-mysql -u root -p -e "SELECT 1;"
-
-# Update DATABASE_URL in backend/.env
-DATABASE_URL=mysql+pymysql://root:password@localhost:3306/ewaste_system
-```
-
-### Module Not Found
-
-```bash
-# Frontend
-cd frontend && npm install
-
-# Backend
-cd backend && pip install -r requirements.txt
-```
-
-### Docker Issues
-
-```bash
-# Rebuild images
-docker-compose up -d --build
-
-# View logs
-docker-compose logs -f
-
-# Clean up
-docker-compose down -v
-```
-
----
-
-## 📁 Project Structure
-
-```
-ewaste-system/
-├── frontend/              # React app
-├── backend/               # Flask API
-├── database/              # MySQL schema
-├── docs/                  # Documentation
-├── docker-compose.yml     # Docker setup
-└── README.md              # Full documentation
-```
-
----
-
-## 🚀 Next Steps
-
-1. **Explore the UI** - Navigate through all dashboards
-2. **Test API** - Use Postman collection
-3. **Check Logs** - `docker-compose logs`
-4. **Read Docs** - See README.md for full details
-5. **Deploy** - See DEPLOYMENT.md for production setup
-
----
-
-## 📞 Need Help?
-
-- **Setup Issues**: See `SETUP.md`
-- **API Questions**: See `docs/API.md`
-- **Deployment**: See `docs/DEPLOYMENT.md`
-- **Project Details**: See `README.md`
-
----
-
-## ✨ Key Features to Try
-
-1. **User Registration** - Create new account with different roles
-2. **AI Detection** - Upload e-waste image for detection
-3. **Pickup Booking** - Schedule waste collection
-4. **Admin Dashboard** - View system analytics
-5. **Environmental Impact** - See recycling statistics
-6. **Reports** - Generate system reports
-
----
-
-**Congratulations! Your E-Waste Monitoring System is running!** 🎉
-
-**Status**: ✅ Ready to use  
-**Version**: 1.0.0  
-**Last Updated**: July 30, 2026
+Uploads are temporary and removed after inference. There is no database, authentication, personal pickup tracking, or persistent analytics. Charts are illustrative. Facility searches are third-party map results, not a verified directory. AI output and recovery estimates are informational, not certified safety assessments.
