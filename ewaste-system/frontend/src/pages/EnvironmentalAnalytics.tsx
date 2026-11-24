@@ -1,19 +1,14 @@
-import { Leaf, Zap, Droplet, TreePine } from 'lucide-react';
+import { BarChart3, Leaf, Recycle, ShieldAlert, TrendingUp, Droplets, Info } from 'lucide-react';
+import AppShell from '../components/AppShell';
 
+const categories = [{name:'Small IT & telecom',value:31},{name:'Large equipment',value:24},{name:'Temperature exchange',value:18},{name:'Screens & monitors',value:15},{name:'Other electronics',value:12}];
+const elements = [{name:'Lead',risk:'High',detail:'Found in older displays, solder and components.'},{name:'Mercury',risk:'High',detail:'May occur in lamps and selected display components.'},{name:'Cadmium',risk:'Medium',detail:'Can be present in batteries and electronic components.'},{name:'Arsenic',risk:'Medium',detail:'May occur in legacy semiconductor materials.'}];
 export default function EnvironmentalAnalytics() {
-  const metrics = [
-    { label: 'CO₂ Saved', value: '— kg', Icon: Leaf },
-    { label: 'Energy Saved', value: '— kWh', Icon: Zap },
-    { label: 'Water Saved', value: '— L', Icon: Droplet },
-    { label: 'Trees Saved', value: '—', Icon: TreePine }
-  ];
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-500 via-blue-500 to-purple-600 p-6">
-      <h1 className="text-3xl font-bold text-white mb-8">Environmental Analytics</h1>
-      <p className="text-white/80 mb-6">Live aggregate analytics require persistent storage, which is disabled in this public demo.</p>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {metrics.map(({ label, value, Icon }) => <div key={label} className="glass p-6 rounded-xl"><Icon className="w-8 h-8 text-emerald-200 mb-4" /><p className="text-white/70 text-sm">{label}</p><p className="text-3xl font-bold text-white mt-2">{value}</p></div>)}
-      </div>
-    </div>
-  );
+ return <AppShell><div className="mb-6 flex flex-wrap items-end justify-between gap-3"><div><p className="text-[9px] font-bold uppercase tracking-[.16em] text-emerald-300">Circularity telemetry / overview</p><h1 className="mt-1 text-3xl font-extrabold">Environmental Impact & Analytics</h1><p className="mt-2 text-sm text-slate-400">Educational indicators and illustrative global reference data.</p></div><span className="rounded-full border border-amber-300/20 bg-amber-300/5 px-3 py-1.5 text-[9px] font-bold text-amber-200">SAMPLE DATA · NOT LIVE</span></div>
+ <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">{[{t:'CO₂ AVOIDANCE',v:'Illustrative',u:'impact indicator',Icon:Leaf},{t:'MATERIAL RECOVERY',v:'Circular',u:'resource pathway',Icon:Recycle},{t:'HAZARD AWARENESS',v:'4 elements',u:'risk reference',Icon:ShieldAlert},{t:'GLOBAL TREND',v:'2020–2030',u:'reference horizon',Icon:TrendingUp}].map(({t,v,u,Icon})=><article key={t} className="rounded-xl border border-[#26334a] bg-[#151f33] p-4"><div className="flex justify-between text-[9px] font-bold tracking-[.12em] text-slate-400"><span>{t}</span><Icon size={17} className="text-emerald-300"/></div><p className="mt-4 text-2xl font-extrabold">{v}</p><p className="mt-1 text-[10px] text-slate-500">{u}</p></article>)}</div>
+ <div className="mt-4 grid gap-4 xl:grid-cols-2"><section className="rounded-xl border border-[#26334a] bg-[#151f33] p-5"><div className="flex items-center gap-2"><BarChart3 size={17} className="text-emerald-300"/><h2 className="font-bold">E-Waste by Category</h2></div><p className="mt-1 text-[10px] text-slate-500">Illustrative distribution for interface demonstration</p><div className="mt-6 space-y-4">{categories.map(c=><div key={c.name}><div className="mb-1.5 flex justify-between text-xs"><span className="text-slate-300">{c.name}</span><span className="font-semibold text-emerald-300">{c.value}%</span></div><div className="h-2 rounded-full bg-[#303b50]"><div className="h-2 rounded-full bg-gradient-to-r from-emerald-500 to-emerald-300" style={{width:`${c.value}%`}}/></div></div>)}</div></section>
+ <section className="rounded-xl border border-[#26334a] bg-[#151f33] p-5"><div className="flex items-center gap-2"><TrendingUp size={17} className="text-emerald-300"/><h2 className="font-bold">Global Projection Trend</h2></div><p className="mt-1 text-[10px] text-slate-500">Conceptual growth visualization · sample values</p><div className="mt-7 flex h-44 items-end gap-3 border-b border-l border-[#3a465b] px-3 pb-0">{[35,40,47,52,59,65,72,80,87,94,100].map((h,i)=><div key={i} className="group flex flex-1 flex-col items-center justify-end gap-2"><div className="w-full rounded-t bg-gradient-to-t from-emerald-700 to-emerald-300 opacity-80" style={{height:`${h}%`}}/><span className="text-[8px] text-slate-500">{2020+i}</span></div>)}</div><p className="mt-3 text-[9px] text-slate-500">Illustrative index only; not a measured or forecast dataset.</p></section></div>
+ <section className="mt-4 rounded-xl border border-[#26334a] bg-[#151f33] p-5"><div className="flex items-center gap-2"><ShieldAlert size={17} className="text-emerald-300"/><h2 className="font-bold">Toxic Element Dispersion Risk Matrix</h2></div><div className="mt-4 grid gap-3 md:grid-cols-2">{elements.map(e=><div key={e.name} className="flex items-start justify-between gap-4 rounded-lg bg-[#1b263a] p-4"><div><h3 className="text-sm font-semibold">{e.name}</h3><p className="mt-1 text-xs text-slate-400">{e.detail}</p></div><span className={`rounded-full px-2.5 py-1 text-[9px] font-bold ${e.risk==='High'?'bg-rose-400/10 text-rose-300':'bg-amber-300/10 text-amber-200'}`}>{e.risk} risk</span></div>)}</div></section>
+ <div className="mt-4 flex gap-3 rounded-lg border border-emerald-300/15 bg-emerald-300/5 p-4 text-xs leading-5 text-slate-300"><Info size={16} className="shrink-0 text-emerald-300"/> These charts and indicators are static demonstration content. The database is disabled, so the application does not collect or display live user or regional analytics.</div>
+ </AppShell>;
 }
