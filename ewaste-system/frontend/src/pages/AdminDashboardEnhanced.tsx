@@ -1,7 +1,6 @@
 import { LogOut, Users, MapPin, TrendingUp, Download } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { useState } from 'react';
 
 interface User {
   id: number;
