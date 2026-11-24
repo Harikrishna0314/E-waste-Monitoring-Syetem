@@ -32,7 +32,7 @@ The YOLO weights must exist on the deployed backend filesystem. A path on a deve
 
 ## Deploy frontend separately
 
-Deploy `frontend` as a Vite static site. Build command: `npm ci && npm run build`; output directory: `dist`.
+Deploy `frontend` as a Vite static site. Build command: `npm install && npm run build`; output directory: `dist`.
 
 Set the build-time variable `VITE_API_URL` to the backend API base, e.g. `https://your-backend.example/api`. Do not add a trailing slash. Set backend `CORS_ORIGINS` to the exact frontend origin.
 
