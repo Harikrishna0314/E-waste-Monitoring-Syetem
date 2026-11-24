@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { Activity, BarChart3, BookOpen, Cpu, Database, Leaf, Recycle, ShieldCheck } from 'lucide-react';
 
