@@ -18,7 +18,7 @@ jobs:
           cache-dependency-path: ewaste-system/frontend/package-lock.json
       - name: Install frontend dependencies
         working-directory: ewaste-system/frontend
-        run: npm ci
+        run: npm install --no-audit --no-fund
       - name: Build frontend
         working-directory: ewaste-system/frontend
         run: npm run build
