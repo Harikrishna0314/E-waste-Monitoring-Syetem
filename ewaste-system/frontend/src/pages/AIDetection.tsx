@@ -1,6 +1,5 @@
 import { LogOut, Upload } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
 
 interface User {
   id: number;
@@ -14,9 +13,8 @@ interface PageProps {
   onLogout: () => void;
 }
 
-export default function AIDetection({ user, onLogout }: PageProps) {
+export default function AIDetection({ user: _user, onLogout }: PageProps) {
   const navigate = useNavigate();
-  const [file, setFile] = useState<File | null>(null);
 
   const handleLogout = () => {
     onLogout();
@@ -44,7 +42,6 @@ export default function AIDetection({ user, onLogout }: PageProps) {
           <input
             type="file"
             accept="image/*"
-            onChange={(e) => setFile(e.target.files?.[0] || null)}
             className="hidden"
             id="file-input"
           />
