@@ -1,361 +1,61 @@
-# AI-Powered Smart E-Waste Monitoring System
+# CirculAI — E-Waste Monitoring & Circular AI System
 
-A comprehensive, enterprise-grade web application for monitoring, classifying, collecting, and recycling electronic waste using Artificial Intelligence (YOLOv11 object detection).
+A public, database-free e-waste monitoring demonstrator. CirculAI combines a React interface with a Flask API and YOLO-based image inference to identify supported electronic waste classes and present basic handling guidance.
 
-## 🌍 Project Overview
+## Implemented features
+- Public guest access: no login, registration, authentication, or logout.
+- AI detection: JPG, PNG, and WEBP upload, drag-and-drop, camera capture, confidence scores, bounding boxes, hazard levels, recommendations, and JSON result export.
+- Environmental analytics: interactive category chart, illustrative trend chart, hazardous-material matrix, and browser print / Save as PDF.
+- Disposal guide: category filters, four-step disposal protocol, map-based facility search by city, and expandable safety FAQs.
+- Project architecture: interactive walkthrough of the frontend, Flask API, YOLO inference, and response flow.
+- API Docs page with endpoint descriptions and a copyable cURL example.
+- Docker Compose: Nginx serves the frontend and proxies API requests to Flask.
 
-The E-Waste Monitoring System is designed to address the growing environmental challenge of electronic waste. It provides a complete platform for:
+## Important limitations
+- There is no database, saved prediction history, personal tracking, pickup booking, or live user analytics.
+- Analytics are illustrative demo data, not live telemetry.
+- Facility search opens third-party map results. Verify facility authorization and accepted materials before visiting.
+- Live AI inference requires compatible e-waste-trained YOLO weights. Model weights are not included in this repository.
+- Weight and recovery-value outputs are heuristics, not certified valuations. AI output is not a safety assessment.
 
-- **Users**: Report e-waste, book pickups, track recycling status, and view environmental impact
-- **Collection Centers**: Manage inventory, track assigned pickups, and optimize collection routes
-- **Administrators**: Monitor system-wide metrics, manage users, and generate reports
-- **Developers**: Train and evaluate AI models, manage datasets, and monitor system performance
+## Requirements
+- Node.js 22.13+ for Vite 8.
+- Python 3.11.
+- Compatible YOLO weights mapped to supported classes: laptop, mobile, battery, keyboard, mouse, monitor, CPU, printer, cable, router.
+- Optional: Docker Engine and Docker Compose.
 
-## 🏗️ Architecture
+## Local setup
+1. Place trained weights at `ai/models/yolov11n.pt`, or set `YOLO_MODEL_PATH` to the weights path.
+2. Start Flask: `cd backend`, create/activate a virtual environment, run `pip install -r requirements.txt`, then `python app.py`.
+3. Start the frontend in another terminal: `cd frontend`, run `npm ci`, then `npm run dev`.
+4. Open `http://localhost:5173`. Vite proxies `/api` to Flask on port 5000. Set `VITE_DEV_API_TARGET` if Flask runs elsewhere.
 
-### Frontend
-- **Framework**: React 19 with TypeScript
-- **Build Tool**: Vite
-- **Styling**: Tailwind CSS with Glassmorphism design
-- **State Management**: React Hooks & Axios
-- **UI Components**: Lucide Icons, Recharts for visualizations
-- **Animations**: Framer Motion for smooth transitions
-
-### Backend
-- **Framework**: Flask (Python)
-- **Database**: MySQL/TiDB
-- **Authentication**: JWT with bcrypt password hashing
-- **API**: RESTful APIs with proper error handling
-- **AI Integration**: YOLOv11 for e-waste detection
-
-### Database
-- **Engine**: MySQL
-- **ORM**: SQLAlchemy
-- **Schema**: Multi-table relational design with proper indexing
-
-### AI/ML
-- **Model**: YOLOv11 (You Only Look Once v11)
-- **Framework**: Ultralytics
-- **Vision Processing**: OpenCV
-- **Supported Classes**: Laptop, Mobile, Battery, Keyboard, Mouse, Monitor, CPU, Printer, Cable, Router
-
-## 📁 Project Structure
-
-```
-ewaste-system/
-├── frontend/                    # React TypeScript application
-│   ├── src/
-│   │   ├── pages/              # Page components (dashboards, auth)
-│   │   ├── components/         # Reusable UI components
-│   │   ├── App.tsx             # Main routing component
-│   │   ├── main.tsx            # Entry point
-│   │   └── index.css           # Global styles with Glassmorphism
-│   ├── package.json
-│   ├── tailwind.config.js
-│   └── vite.config.ts
-│
-├── backend/                     # Flask Python application
-│   ├── app.py                  # Main Flask application
-│   ├── config.py               # Configuration management
-│   ├── models.py               # SQLAlchemy database models
-│   ├── auth.py                 # Authentication utilities
-│   ├── ai_service.py           # YOLO detection service
-│   ├── requirements.txt        # Python dependencies
-│   └── .env.example            # Environment variables template
-│
-├── database/
-│   ├── schema.sql              # Complete database schema
-│   └── migrations/             # Database migrations
-│
-├── ai/
-│   ├── models/                 # Pre-trained YOLO models
-│   ├── datasets/               # Training datasets
-│   └── training_logs/          # Model training logs
-│
-├── uploads/                     # User uploaded files
-├── reports/                     # Generated reports (PDF, Excel, CSV)
-├── logs/                        # Application logs
-└── docs/                        # Documentation
-
-```
-
-## 🚀 Getting Started
-
-### Prerequisites
-- Node.js 18+ (for frontend)
-- Python 3.8+ (for backend)
-- MySQL 8.0+ (for database)
-- Git
-
-### Frontend Setup
-
+## Docker Compose
+From the `ewaste-system` directory run:
 ```bash
-cd frontend
-npm install
-npm run dev
+docker compose up --build -d
 ```
+Open `http://localhost:3000`. Nginx proxies `/api` to the backend. Mount or place weights in `ai/models/` before starting.
 
-The frontend will be available at `http://localhost:5173`
+## Separate frontend/backend deployment
+Backend: deploy the `backend` directory with Python 3.11 and start with `gunicorn --workers 2 --timeout 180 --bind 0.0.0.0:$PORT app:app`. Set `FLASK_ENV=production`, `YOLO_MODEL_PATH` to a path on the backend host, and `CORS_ORIGINS` to the frontend origin.
 
-### Backend Setup
+Frontend: deploy `frontend` as a Vite static site with build command `npm ci && npm run build` and output directory `dist`. Set build-time `VITE_API_URL` to the backend API base, for example `https://your-backend.example/api` (no trailing slash).
 
-```bash
-cd backend
-python3 -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-pip install -r requirements.txt
-python app.py
-```
+## API endpoints
+| Method | Endpoint | Purpose |
+|---|---|---|
+| GET | `/api/health` | API status and model configuration status |
+| GET | `/api/ai/model-info` | Model weights availability and supported labels |
+| POST | `/api/ai/predict` | Image inference; multipart field must be named `file` |
+| GET | `/api/analytics/environmental` | Empty analytics metadata in database-free mode |
 
-The backend API will be available at `http://localhost:5000/api`
+## Troubleshooting
+- API offline: verify Flask and the configured API base URL / proxy.
+- Model unavailable: put trained weights on the backend host and set `YOLO_MODEL_PATH`.
+- CORS errors on separate hosting: set `CORS_ORIGINS` to the exact frontend origin.
+- Camera unavailable: browser camera requires HTTPS or localhost and permission.
+- Image rejected: upload JPG, PNG, or WEBP no larger than 10 MB.
 
-### Database Setup
-
-```bash
-mysql -u root -p < database/schema.sql
-```
-
-Update the `DATABASE_URL` in `backend/.env` with your MySQL credentials.
-
-## 🔐 Authentication
-
-The system uses JWT (JSON Web Tokens) for authentication:
-
-- **Registration**: `/api/auth/register` (POST)
-- **Login**: `/api/auth/login` (POST)
-- **Get Current User**: `/api/auth/me` (GET, requires token)
-
-All protected endpoints require an `Authorization: Bearer <token>` header.
-
-## 👥 User Roles
-
-### 1. User
-- Report e-waste items
-- Upload images for AI detection
-- Book pickup requests
-- Track pickup status
-- View environmental impact
-- Earn recycling points
-
-### 2. Collection Center
-- View assigned pickups
-- Update pickup status
-- Manage inventory
-- View collection routes on map
-
-### 3. Administrator
-- Manage all users
-- Manage collection centers
-- View system-wide analytics
-- Generate reports
-- Monitor environmental impact
-- System configuration
-
-### 4. Developer
-- Train YOLO models
-- Manage datasets
-- Monitor model performance
-- View AI prediction logs
-- API management
-
-## 🤖 AI E-Waste Detection
-
-### Supported E-Waste Categories
-1. **Laptop** - High hazard (contains mercury, lead)
-2. **Mobile Phone** - Medium hazard (rare earth elements)
-3. **Battery** - High hazard (must be recycled separately)
-4. **Keyboard** - Low hazard (can be refurbished)
-5. **Mouse** - Low hazard (can be refurbished)
-6. **Monitor** - High hazard (contains mercury)
-7. **CPU** - High hazard (valuable metals)
-8. **Printer** - Medium hazard (contains toner)
-9. **Cable** - Low hazard (copper recovery)
-10. **Router** - Medium hazard (circuit boards)
-
-### Detection Process
-
-```
-User uploads image
-        ↓
-Image preprocessing (resize, normalize)
-        ↓
-YOLOv11 inference
-        ↓
-Bounding box generation
-        ↓
-Confidence scoring
-        ↓
-Hazard level classification
-        ↓
-Recycling recommendation
-        ↓
-Store prediction in database
-```
-
-## 📊 Environmental Analytics
-
-The system tracks and calculates:
-
-- **CO₂ Saved** (kg) - Based on items recycled
-- **Energy Saved** (kWh) - Estimated from material recovery
-- **Water Saved** (liters) - From manufacturing offset
-- **Trees Saved** - Equivalent to paper saved
-- **Materials Recovered**:
-  - Plastic (kg)
-  - Copper (kg)
-  - Aluminium (kg)
-
-## 📈 API Endpoints
-
-### Authentication
-- `POST /api/auth/register` - Register new user
-- `POST /api/auth/login` - Login user
-- `GET /api/auth/me` - Get current user (protected)
-
-### Admin
-- `GET /api/admin/dashboard` - Admin dashboard data
-- `GET /api/admin/users` - List all users
-- `GET /api/admin/collection-centers` - List collection centers
-
-### AI Prediction
-- `POST /api/ai/predict` - Predict e-waste from image
-- `GET /api/ai/predictions` - Get prediction history
-
-### Pickups
-- `POST /api/pickups` - Create pickup request
-- `GET /api/pickups/<id>` - Get pickup details
-- `PUT /api/pickups/<id>` - Update pickup status
-
-### Analytics
-- `GET /api/analytics/environmental` - Environmental metrics
-
-### Health
-- `GET /api/health` - Health check
-
-## 🎨 Design System
-
-### Glassmorphism
-The UI uses a modern Glassmorphism design with:
-- Semi-transparent backgrounds with blur effects
-- Soft gradients (Emerald, Blue, Purple)
-- Smooth animations and transitions
-- Responsive layout (mobile-first)
-
-### Color Palette
-- **Primary**: Emerald Green (#10b981)
-- **Secondary**: Blue (#3b82f6)
-- **Accent**: Purple (#a855f7)
-- **Success**: Green (#22c55e)
-- **Warning**: Amber (#f59e0b)
-- **Error**: Red (#ef4444)
-
-### Typography
-- **Font Family**: Segoe UI, Tahoma, Geneva, Verdana
-- **Heading Weight**: Bold (700)
-- **Body Weight**: Regular (400)
-- **Line Height**: 1.6
-
-## 🔒 Security Features
-
-- **JWT Authentication**: Secure token-based authentication
-- **Password Hashing**: bcrypt with 10 rounds
-- **SQL Injection Protection**: SQLAlchemy parameterized queries
-- **CSRF Protection**: CORS configuration
-- **XSS Protection**: React's built-in XSS prevention
-- **Rate Limiting**: API rate limiting (to be implemented)
-- **Audit Logs**: Track all user actions
-- **Role-Based Access Control**: Granular permission management
-
-## 📝 Database Schema
-
-### Key Tables
-- **users**: User accounts with roles
-- **collection_centers**: Physical e-waste collection points
-- **ewaste_items**: Reported e-waste items
-- **pickup_requests**: Scheduled pickups
-- **ai_predictions**: YOLO detection results
-- **environmental_analytics**: Daily environmental metrics
-- **reports**: Generated system reports
-- **notifications**: User notifications
-- **audit_logs**: System activity logs
-
-## 🧪 Testing
-
-```bash
-# Backend tests
-cd backend
-pytest
-
-# Frontend tests
-cd frontend
-npm test
-```
-
-## 📦 Deployment
-
-### Frontend (Vercel/Netlify)
-```bash
-cd frontend
-npm run build
-# Deploy the dist/ folder
-```
-
-### Backend (Heroku/AWS/DigitalOcean)
-```bash
-cd backend
-pip freeze > requirements.txt
-# Deploy with Procfile
-```
-
-### Database
-- Use managed MySQL service (AWS RDS, DigitalOcean, etc.)
-- Run migrations on deployment
-- Set up automated backups
-
-## 📚 Documentation
-
-- **API Documentation**: See `docs/API.md`
-- **Database Schema**: See `database/schema.sql`
-- **Deployment Guide**: See `docs/DEPLOYMENT.md`
-- **Contributing**: See `CONTRIBUTING.md`
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## 📄 License
-
-This project is licensed under the MIT License - see `LICENSE` file for details.
-
-## 🙏 Acknowledgments
-
-- YOLOv11 by Ultralytics
-- React community
-- Flask community
-- Tailwind CSS
-- All contributors and supporters
-
-## 📞 Support
-
-For support, email support@ewastemonitor.com or open an issue on GitHub.
-
-## 🗺️ Roadmap
-
-- [ ] Mobile app (React Native)
-- [ ] Real-time notifications (WebSocket)
-- [ ] Advanced analytics dashboard
-- [ ] IoT sensor integration
-- [ ] Blockchain for waste tracking
-- [ ] Machine learning recommendations
-- [ ] Multi-language support
-- [ ] Advanced reporting (PDF, Excel export)
-
----
-
-**Last Updated**: July 2026  
-**Version**: 1.0.0  
-**Status**: Production Ready
+## Privacy
+Images are stored temporarily during inference and deleted after the request. The app does not persist user records, predictions, pickup requests, or analytics. Avoid uploading confidential images.
