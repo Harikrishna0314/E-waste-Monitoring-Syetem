@@ -1,4 +1,4 @@
-import { Bar, BarChart, CartesianGrid, Cell, Line, LineChart, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { CartesianGrid, Cell, Line, LineChart, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { BarChart3, Download, Info, Leaf, Recycle, ShieldAlert, TrendingUp } from 'lucide-react';
 import AppShell from '../components/AppShell';
 
