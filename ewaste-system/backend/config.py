@@ -9,16 +9,19 @@ class Config:
     # Database
     SQLALCHEMY_DATABASE_URI = os.getenv(
         'DATABASE_URL',
-        'mysql+pymysql://root:password@localhost:3306/ewaste_system'
+        'sqlite:///ewaste.db'
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
     # JWT
-    JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY', 'your-secret-key-change-in-production')
+    JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY')
+    if not JWT_SECRET_KEY and os.getenv('FLASK_ENV') == 'production':
+        raise RuntimeError('JWT_SECRET_KEY must be configured in production')
+    JWT_SECRET_KEY = JWT_SECRET_KEY or 'development-only-change-this-secret'
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=24)
     
     # CORS
-    CORS_ORIGINS = os.getenv('CORS_ORIGINS', 'http://localhost:5173').split(',')
+    CORS_ORIGINS = [origin.strip() for origin in os.getenv('CORS_ORIGINS', 'http://localhost:5173').split(',') if origin.strip()]
     
     # File Upload
     MAX_CONTENT_LENGTH = 50 * 1024 * 1024  # 50MB
