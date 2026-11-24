@@ -1,4 +1,4 @@
-import { BarChart3, Leaf, Recycle, ShieldAlert, TrendingUp, Droplets, Info } from 'lucide-react';
+import { BarChart3, Leaf, Recycle, ShieldAlert, TrendingUp, Info } from 'lucide-react';
 import AppShell from '../components/AppShell';
 
 const categories = [{name:'Small IT & telecom',value:31},{name:'Large equipment',value:24},{name:'Temperature exchange',value:18},{name:'Screens & monitors',value:15},{name:'Other electronics',value:12}];
