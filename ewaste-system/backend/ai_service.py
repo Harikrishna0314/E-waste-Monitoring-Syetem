@@ -68,7 +68,7 @@ class EWasteDetectionService:
     
     def __init__(self, model_path=None):
         """Defer loading large AI weights until a prediction is requested."""
-        self.model_path = model_path or os.getenv('YOLO_MODEL_PATH', 'yolo11n.pt')
+        self.model_path = model_path or os.getenv('YOLO_MODEL_PATH', os.path.join(os.path.dirname(__file__), '..', 'ai', 'models', 'yolov11n.pt'))
         self.model = None
         self.model_version = 'unavailable'
         self.model_load_attempted = False
@@ -80,7 +80,7 @@ class EWasteDetectionService:
         self.model_load_attempted = True
         try:
             from ultralytics import YOLO
-            if self.model_path != 'yolo11n.pt' and not os.path.isfile(self.model_path):
+            if not os.path.isfile(self.model_path):
                 print(f"E-waste model weights not found: {self.model_path}")
                 return False
             self.model = YOLO(self.model_path)
