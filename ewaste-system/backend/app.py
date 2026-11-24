@@ -14,6 +14,7 @@ SUPPORTED_CLASSES = [
     'laptop', 'mobile', 'battery', 'keyboard', 'mouse',
     'monitor', 'cpu', 'printer', 'cable', 'router'
 ]
+STARTER_MODEL_CLASSES = ['laptop', 'mobile', 'keyboard', 'mouse', 'monitor']
 ALLOWED_MIME_TYPES = {'image/jpeg', 'image/png', 'image/webp'}
 MAX_IMAGE_BYTES = 10 * 1024 * 1024
 
@@ -81,11 +82,12 @@ def create_app(config_name='development'):
     def model_info():
         model_path = ai_service.model_path
         weights_available = os.path.isfile(model_path)
+        is_starter_model = os.path.basename(model_path).lower() == 'yolo11n.pt'
         return jsonify({
             'configured': weights_available,
             'model_name': os.path.basename(model_path),
             'weights_available': weights_available,
-            'supported_classes': SUPPORTED_CLASSES,
+            'supported_classes': STARTER_MODEL_CLASSES if is_starter_model else SUPPORTED_CLASSES,
             'max_image_size_mb': 10,
             'inference_endpoint': '/api/ai/predict'
         }), 200
