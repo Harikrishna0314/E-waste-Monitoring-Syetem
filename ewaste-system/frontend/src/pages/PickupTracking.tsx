@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Battery, ExternalLink, Info, Laptop, MapPin, Recycle, Search, ShieldAlert, Smartphone, Tv } from 'lucide-react';
+import { Battery, ExternalLink, Info, Laptop, MapPin, Search, ShieldAlert, Smartphone, Tv } from 'lucide-react';
 import AppShell from '../components/AppShell';
 
 const categories=[{name:'Batteries & power banks',detail:'Protect exposed terminals with non-conductive tape where safe. Never puncture, crush, or place lithium batteries in household waste.',Icon:Battery,filter:'battery',query:'authorized lithium battery recycling collection center'},{name:'Computers & IT',detail:'Back up and securely erase personal data. Keep chargers and accessories together, and use an authorized e-waste route.',Icon:Laptop,filter:'it',query:'authorized computer laptop e-waste recycling center'},{name:'Phones & tablets',detail:'Remove SIM and memory cards, sign out of accounts, and factory reset the device before recycling.',Icon:Smartphone,filter:'it',query:'mobile phone e-waste take back collection center'},{name:'Screens & televisions',detail:'Do not break CRT or display panels. Keep equipment intact and arrange specialist handling.',Icon:Tv,filter:'display',query:'television monitor e-waste recycling center'}];
