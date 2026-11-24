@@ -4,7 +4,6 @@ import { AlertCircle, ArrowLeft, CheckCircle2, Clock3, ImagePlus, Leaf, Loader2,
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
-interface User { id: number; email: string; full_name: string; role: string; }
 interface Prediction {
   prediction_id?: number;
   detected_objects: string[];
