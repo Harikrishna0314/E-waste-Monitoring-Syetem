@@ -9,6 +9,8 @@ from auth import hash_password, verify_password, generate_token, token_required,
 from ai_service import ai_service
 from datetime import datetime
 import os
+import uuid
+from werkzeug.utils import secure_filename
 
 def create_app(config_name='development'):
     """Create and configure Flask application"""
@@ -35,7 +37,7 @@ def create_app(config_name='development'):
         try:
             data = request.get_json()
             
-            if not data or not all(k in data for k in ['email', 'password', 'full_name', 'role']):
+            if not data or not all(k in data for k in ['email', 'password', 'full_name']):
                 return jsonify({'error': 'Missing required fields'}), 400
             
             if User.query.filter_by(email=data['email']).first():
@@ -45,7 +47,7 @@ def create_app(config_name='development'):
                 email=data['email'],
                 password_hash=hash_password(data['password']),
                 full_name=data['full_name'],
-                role=data.get('role', 'user'),
+                role='user',
                 phone=data.get('phone'),
                 address=data.get('address'),
                 city=data.get('city'),
@@ -194,7 +196,10 @@ def create_app(config_name='development'):
                 return jsonify({'error': 'No file selected'}), 400
             
             # Save file temporarily
-            temp_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+            safe_name = secure_filename(file.filename)
+            if not safe_name or not file.mimetype or not file.mimetype.startswith('image/'):
+                return jsonify({'error': 'Please upload a valid image file'}), 400
+            temp_path = os.path.join(app.config['UPLOAD_FOLDER'], f'{uuid.uuid4().hex}_{safe_name}')
             file.save(temp_path)
             
             # Run detection
@@ -253,6 +258,9 @@ def create_app(config_name='development'):
             if not data or 'ewaste_item_id' not in data:
                 return jsonify({'error': 'Missing required fields'}), 400
             
+            item = EWasteItem.query.get(data['ewaste_item_id'])
+            if not item or item.user_id != request.user_id:
+                return jsonify({'error': 'E-waste item not found or access denied'}), 404
             pickup = PickupRequest(
                 user_id=request.user_id,
                 ewaste_item_id=data['ewaste_item_id'],
@@ -282,6 +290,8 @@ def create_app(config_name='development'):
             
             if not pickup:
                 return jsonify({'error': 'Pickup request not found'}), 404
+            if pickup.user_id != request.user_id and request.user_role not in ('admin', 'developer'):
+                return jsonify({'error': 'Access denied'}), 403
             
             return jsonify({
                 'id': pickup.id,
