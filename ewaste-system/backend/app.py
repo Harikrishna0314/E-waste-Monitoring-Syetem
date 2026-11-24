@@ -1,5 +1,5 @@
-"""Database-free Flask API for the public CirculAI E-Waste Monitoring demo."""
-from flask import Flask, request, jsonify
+"""Database-free Flask API and optional SPA host for CirculAI."""
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from dotenv import load_dotenv
 
@@ -106,6 +106,22 @@ def create_app(config_name='development'):
             'database': 'disabled',
             'ai_model_configured': weights_available
         }), 200
+
+    # In the single-service cloud image, Flask also serves the compiled React SPA.
+    # In local split-service and Docker Compose modes FRONTEND_DIST is unset, so
+    # the dedicated Vite/Nginx frontend keeps serving the UI as before.
+    frontend_dist = os.getenv('FRONTEND_DIST')
+    if frontend_dist and os.path.isdir(frontend_dist):
+        @app.route('/', defaults={'path': ''})
+        @app.route('/<path:path>')
+        def serve_frontend(path):
+            if path == 'api' or path.startswith('api/'):
+                return jsonify({'error': 'Endpoint not found'}), 404
+            if path:
+                candidate = os.path.join(frontend_dist, path)
+                if os.path.isfile(candidate):
+                    return send_from_directory(frontend_dist, path)
+            return send_from_directory(frontend_dist, 'index.html')
 
     @app.errorhandler(404)
     def not_found(error):
