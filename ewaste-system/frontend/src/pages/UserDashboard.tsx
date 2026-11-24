@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { Activity, AlertTriangle, ArrowUpRight, Battery, CheckCircle2, Cpu, Droplets, Gem, Leaf, Recycle, ShieldAlert, Sparkles, TreePine, Zap } from 'lucide-react';
+import { Activity, AlertTriangle, ArrowUpRight, Battery, CheckCircle2, Cpu, Droplets, Gem, Leaf, Recycle, ShieldAlert, Sparkles, TreePine } from 'lucide-react';
 import AppShell from '../components/AppShell';
 
 const metrics = [
