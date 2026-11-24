@@ -16,7 +16,7 @@ MAX_IMAGE_BYTES = 10 * 1024 * 1024
 
 def create_app(config_name='development'):
     app = Flask(__name__)
-    app.config['MAX_CONTENT_LENGTH'] = MAX_IMAGE_BYTES
+    app.config['MAX_CONTENT_LENGTH'] = MAX_IMAGE_BYTES + (1024 * 1024)
     app.config['UPLOAD_FOLDER'] = os.path.join(os.path.dirname(__file__), '..', 'uploads')
     origins = os.getenv('CORS_ORIGINS', '*')
     CORS(app, origins='*' if origins == '*' else [x.strip() for x in origins.split(',') if x.strip()])
