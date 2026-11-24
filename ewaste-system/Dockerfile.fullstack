@@ -1,0 +1,25 @@
+# Build the React SPA first. The API uses /api on the same origin.
+FROM node:22-alpine AS frontend-build
+WORKDIR /frontend
+COPY frontend/package*.json ./
+RUN npm install --no-audit --no-fund
+COPY frontend/ ./
+RUN npm run build
+
+# One deployable service: Gunicorn API + compiled React assets.
+FROM python:3.11-slim
+WORKDIR /app
+RUN apt-get update && apt-get install -y --no-install-recommends gcc libgl1 libglib2.0-0 && rm -rf /var/lib/apt/lists/*
+COPY backend/requirements.txt ./requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+# Bundle the official lightweight YOLO11n starter weights during build.
+RUN python -c "from ultralytics import YOLO; YOLO('yolo11n.pt')" && test -s /app/yolo11n.pt
+COPY backend/ ./
+COPY ai/ /ai/
+COPY --from=frontend-build /frontend/dist /app/frontend_dist
+ENV FLASK_ENV=production
+ENV FRONTEND_DIST=/app/frontend_dist
+ENV YOLO_MODEL_PATH=/app/yolo11n.pt
+EXPOSE 10000
+HEALTHCHECK --interval=30s --timeout=10s --start-period=45s --retries=3 CMD python -c "import os,requests; requests.get('http://localhost:%s/api/health' % os.getenv('PORT','10000'), timeout=5).raise_for_status()"
+CMD ["sh", "-c", "exec gunicorn --workers 1 --threads 2 --timeout 180 --bind 0.0.0.0:${PORT:-10000} app:app"]
