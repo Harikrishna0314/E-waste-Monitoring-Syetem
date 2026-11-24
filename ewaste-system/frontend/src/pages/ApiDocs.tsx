@@ -10,7 +10,8 @@ const API = [
 export default function ApiDocs() {
   const [copied, setCopied] = useState('');
   const copy = async (value: string) => { try { await navigator.clipboard.writeText(value); setCopied(value); window.setTimeout(() => setCopied(''), 1800); } catch { setCopied(''); } };
-  const base = (import.meta.env.VITE_API_URL || `${window.location.origin}/api`).replace(/\\/$/, '');
+  const baseValue = import.meta.env.VITE_API_URL || `${window.location.origin}/api`;
+  const base = baseValue.endsWith('/') ? baseValue.slice(0, -1) : baseValue;
   const curl = `curl -X POST "${base}/ai/predict" -F "file=@ewaste-image.jpg"`;
   return <AppShell><div className="mb-6"><p className="text-[9px] font-bold uppercase tracking-[.16em] text-emerald-300">Developer interface / REST contract</p><h1 className="mt-1 text-3xl font-extrabold">API Docs & Schema</h1><p className="mt-2 max-w-3xl text-sm leading-6 text-slate-400">Public API reference for the database-free CirculAI demonstration.</p></div>
   <div className="grid gap-3 md:grid-cols-3">{[{t:'Authentication',v:'Not required',Icon:ShieldCheck},{t:'Persistence',v:'Disabled',Icon:Server},{t:'Inference input',v:'Multipart image',Icon:FileCode2}].map(({t,v,Icon})=><div key={t} className="rounded-xl border border-[#26334a] bg-[#151f33] p-4"><Icon size={18} className="text-emerald-300"/><p className="mt-3 text-[10px] uppercase tracking-wider text-slate-500">{t}</p><p className="mt-1 text-lg font-bold">{v}</p></div>)}</div>
