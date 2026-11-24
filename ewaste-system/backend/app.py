@@ -1,6 +1,10 @@
 """Database-free Flask API for the public CirculAI E-Waste Monitoring demo."""
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from dotenv import load_dotenv
+
+load_dotenv()
+
 from ai_service import ai_service
 from werkzeug.utils import secure_filename
 import os
