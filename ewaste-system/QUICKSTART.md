@@ -33,7 +33,7 @@ python app.py
 
 ```bash
 cd frontend
-npm ci
+npm install
 npm run dev
 ```
 
