@@ -7,24 +7,22 @@ from ultralytics import YOLO
 import time
 from PIL import Image
 import io
-import requests
-from datetime import datetime
+import os
+from pathlib import Path
 
 class EWasteDetectionService:
     """Service for detecting e-waste items using YOLOv11"""
     
-    # E-waste item classes
-    EWASTE_CLASSES = {
-        0: 'laptop',
-        1: 'mobile',
-        2: 'battery',
-        3: 'keyboard',
-        4: 'mouse',
-        5: 'monitor',
-        6: 'cpu',
-        7: 'printer',
-        8: 'cable',
-        9: 'router'
+    # Accept only class names from a model trained for e-waste. Never infer
+    # e-waste labels from numeric IDs in a generic COCO model.
+    LABEL_ALIASES = {
+        'laptop': 'laptop', 'notebook': 'laptop',
+        'mobile': 'mobile', 'mobile phone': 'mobile', 'cell phone': 'mobile', 'smartphone': 'mobile', 'phone': 'mobile',
+        'battery': 'battery', 'keyboard': 'keyboard', 'mouse': 'mouse',
+        'monitor': 'monitor', 'screen': 'monitor', 'display': 'monitor',
+        'cpu': 'cpu', 'desktop': 'cpu', 'computer': 'cpu', 'computer tower': 'cpu',
+        'printer': 'printer', 'cable': 'cable', 'wire': 'cable',
+        'router': 'router'
     }
     
     # Hazard levels for different items
@@ -69,19 +67,43 @@ class EWasteDetectionService:
         'router': 10
     }
     
-    def __init__(self, model_path='yolov11n.pt'):
-        """Initialize the YOLO model"""
+    def __init__(self, model_path=None):
+        """Load configured custom e-waste YOLO weights, if installed."""
+        default_path = Path(__file__).resolve().parent.parent / 'ai' / 'models' / 'yolov11n.pt'
+        self.model_path = model_path or os.getenv('YOLO_MODEL_PATH', str(default_path))
+        self.model = None
+        self.model_version = 'unavailable'
         try:
-            self.model = YOLO(model_path)
-            self.model_version = 'yolov11n'
+            if not os.path.isfile(self.model_path):
+                print(f"E-waste model weights not found: {self.model_path}")
+                return
+            self.model = YOLO(self.model_path)
+            self.model_version = Path(self.model_path).stem
+            names = self.model.names
+            labels = names.values() if isinstance(names, dict) else names
+            normalized = {self._normalize_label(label) for label in labels}
+            if not normalized.intersection(set(self.LABEL_ALIASES.values())):
+                print('Configured weights do not contain supported e-waste classes; detection disabled.')
+                self.model = None
         except Exception as e:
-            print(f"Error loading model: {e}")
+            print(f"Error loading e-waste model: {e}")
             self.model = None
+
+    @staticmethod
+    def _normalize_label(label):
+        return ' '.join(str(label).strip().lower().replace('_', ' ').replace('-', ' ').split())
+
+    def _e_waste_label(self, class_id):
+        names = self.model.names
+        raw_label = names.get(class_id, 'unknown') if isinstance(names, dict) else (
+            names[class_id] if class_id < len(names) else 'unknown'
+        )
+        return self.LABEL_ALIASES.get(self._normalize_label(raw_label))
     
     def detect_from_file(self, image_path):
         """Detect e-waste items from an image file"""
         if not self.model:
-            return {'error': 'Model not loaded'}
+            return {'error': 'The trained e-waste detection model is not installed or configured. Set YOLO_MODEL_PATH to your e-waste-trained .pt weights and restart the backend.'}
         
         try:
             start_time = time.time()
@@ -90,36 +112,6 @@ class EWasteDetectionService:
             image = cv2.imread(image_path)
             if image is None:
                 return {'error': 'Failed to read image'}
-            
-            # Run inference
-            results = self.model(image)
-            processing_time = time.time() - start_time
-            
-            # Process results
-            detection_data = self._process_results(results, image)
-            detection_data['processing_time'] = processing_time
-            detection_data['model_version'] = self.model_version
-            
-            return detection_data
-        
-        except Exception as e:
-            return {'error': str(e)}
-    
-    def detect_from_url(self, image_url):
-        """Detect e-waste items from an image URL"""
-        if not self.model:
-            return {'error': 'Model not loaded'}
-        
-        try:
-            start_time = time.time()
-            
-            # Download image
-            response = requests.get(image_url, timeout=10)
-            image_array = np.frombuffer(response.content, np.uint8)
-            image = cv2.imdecode(image_array, cv2.IMREAD_COLOR)
-            
-            if image is None:
-                return {'error': 'Failed to decode image'}
             
             # Run inference
             results = self.model(image)
@@ -180,7 +172,9 @@ class EWasteDetectionService:
             for box in boxes:
                 # Get class
                 class_id = int(box.cls[0])
-                class_name = self.EWASTE_CLASSES.get(class_id, 'unknown')
+                class_name = self._e_waste_label(class_id)
+                if not class_name:
+                    continue
                 
                 # Get confidence
                 confidence = float(box.conf[0])
