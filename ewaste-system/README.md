@@ -40,7 +40,7 @@ Open `http://localhost:3000`. Nginx proxies `/api` to the backend. Mount or plac
 ## Separate frontend/backend deployment
 Backend: deploy the `backend` directory with Python 3.11 and start with `gunicorn --workers 2 --timeout 180 --bind 0.0.0.0:$PORT app:app`. Set `FLASK_ENV=production`, `YOLO_MODEL_PATH` to a path on the backend host, and `CORS_ORIGINS` to the frontend origin.
 
-Frontend: deploy `frontend` as a Vite static site with build command `npm ci && npm run build` and output directory `dist`. Set build-time `VITE_API_URL` to the backend API base, for example `https://your-backend.example/api` (no trailing slash).
+Frontend: deploy `frontend` as a Vite static site with build command `npm install && npm run build` and output directory `dist`. Set build-time `VITE_API_URL` to the backend API base, for example `https://your-backend.example/api` (no trailing slash).
 
 ## API endpoints
 | Method | Endpoint | Purpose |
